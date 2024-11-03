@@ -1,0 +1,49 @@
+apiGatewayConfig:
+  environment: DEV
+
+  domainConfig:
+    name: "example.com"
+    acmArn: "arn:aws:acm:us-east-1:550242925144:certificate/1ebacea1-5202-4133-bb90-5ec4aba484ff"
+    hostedZoneId: "Z11111522JLL74S51ZFJL"
+
+  vpcLinkConfig:
+    name: "vpcLink-cdk"
+    vpcId: "vpc-0c33701aad1aab0f1"
+    subnets: ["subnet-0f1111cfcaar5eb22", "subnet-1ac3118fc8aac4c10"]
+    securityGroups: ["sg-01ae307de22c35411"]
+
+  integrationConfig:
+    albListenerArn: "arn:aws:elasticloadbalancing:us-east-1:550242925144:listener/app/app-alb/f284f8c55573b140/9d97539f111724ec"
+
+  gatewaysConfig:
+  - appName: "app_1"
+    mtls:
+      bucket: "some_bucket"
+      key: "truststore.pem"
+      version: "J39XO11I2_zc1qVSfjm1XV0LxKtAS1pd"
+    routes:
+      - path: "/api/v1/health"
+        methods: ["GET", "POST"]
+        integration: "/health"
+      - path: "/api/v1/cpf"
+        methods: ["GET", "POST"]
+        integration: "/cfp"
+
+  - appName: app_2
+    # mtls: if not set it will not enable mtls
+    #   bucket: "some_bucket"
+    #   key: "truststore.pem"
+    #   version: "J39XO11I2_zc1qVSfjm1XV0LxKtAS1pd"
+
+    # if set this loggerArn, it will enable apiGateways logs for this app_2 and send to it
+    # loggerArn: "arn:aws:logs:us-east-1:550242925144:log-group:/aws/someloggroup/name"
+    routes:
+      - path: "/api/v2/health"
+        methods: ["GET", "POST"]
+        integration: "/health"
+      - path: "/api/v2/cpf"
+        methods: ["GET", "POST"]
+        integration: "/cpf"
+      - path: "/api/v1/health"
+        methods: ["GET", "POST"]
+        #integration - if not set it will use path as integration which means will not create requestMapping

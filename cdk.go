@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -32,8 +31,6 @@ func main() {
 		deserializeInto(gatewayAttrs); err != nil {
 		log.Fatalf("failed to deserialize gateway attribuites: %v", err)
 	}
-
-	fmt.Println(gatewayAttrs.APIGatewayConfig.GatewaysConfig)
 
 	_, vpcLink := NewVPCLinkStack(app, VPCStack, &CdkStackProps{
 		awscdk.StackProps{

@@ -45,17 +45,6 @@ func configureRouteWithIntegration(stack *stackManager, listener awselasticloadb
 	}
 }
 
-func createParameterMapping(integration *string) map[string]interface{} {
-	if integration != nil {
-		return map[string]interface{}{
-			"overwrite:path": &integration,
-		}
-	}
-	return map[string]interface{}{
-		"overwrite:path": "",
-	}
-}
-
 func registerDomainNames(stack *stackManager, domain awsapigatewayv2.DomainName, domainName string, gattrValues GatewayConfig) {
 	hostedZone := awsroute53.HostedZone_FromLookup(stack.name, jsii.String(gattrValues.AppName+"-HostedZone"), &awsroute53.HostedZoneProviderProps{
 		DomainName: jsii.String(domainName),
@@ -138,4 +127,15 @@ func NewApigwStack(scope constructs.Construct, id string, props *CdkStackProps, 
 	}
 
 	return apiStack.name
+}
+
+func createParameterMapping(integration *string) map[string]interface{} {
+	if integration != nil {
+		return map[string]interface{}{
+			"overwrite:path": &integration,
+		}
+	}
+	return map[string]interface{}{
+		"overwrite:path": "",
+	}
 }

@@ -102,41 +102,39 @@ func createHTTPAPIGateway(stack *stackManager, baseID string, domain awsapigatew
 	return gatewayCfn
 }
 
-func NewApigwStack(scope constructs.Construct, id string, props *CdkStackProps, gattr *ApiGatewayAttributes, vpcLink awsapigatewayv2.IVpcLink) awscdk.Stack {
+func NewApigwStack(scope constructs.Construct, id string, props *CdkStackProps, environment string, domainConfig DomainConfig, vpcLinkConfig VpcLinkConfig, integrationConfig IntegrationConfig, gatewayIndex string, gatewaysAttr GatewayConfig, vpcLink awsapigatewayv2.IVpcLink) awscdk.Stack {
 	var sprops awscdk.StackProps
 	if props != nil {
 		sprops = props.StackProps
 	}
 
-	apiStack := newManagedStack(scope, &id, &sprops)
+	apiStack := newManagedStack(scope, jsii.String(fmt.Sprintf("%s-%s", id, gatewayIndex)), &sprops)
 
-	for gatewayIndex, gatewayConfig := range gattr.GatewaysConfig {
-		gatewayBaseID := fmt.Sprintf("%d-%s", gatewayIndex, id)
+	gatewayBaseID := fmt.Sprintf("%s-%s", gatewayIndex, id)
 
-		httpAPIGatewayDomain := apiStack.createDomainFrom(gatewayConfig.AppName, gattr.DomainConfig.Name).
-			withCert(
-				awscertificatemanager.Certificate_FromCertificateArn(apiStack.name, jsii.String(gatewayBaseID+"-Cert"), jsii.String(gattr.DomainConfig.AcmArn)),
-				gatewayConfig.Mtls,
-				gatewayBaseID,
-			)
+	httpAPIGatewayDomain := apiStack.createDomainFrom(gatewaysAttr.AppName, domainConfig.Name).
+		withCert(
+			awscertificatemanager.Certificate_FromCertificateArn(apiStack.name, jsii.String(gatewayBaseID+"-Cert"), jsii.String(domainConfig.AcmArn)),
+			gatewaysAttr.Mtls,
+			gatewayBaseID,
+		)
 
-		httpAPIGateway := createHTTPAPIGateway(apiStack, gatewayBaseID, httpAPIGatewayDomain, gatewayConfig)
-		registerDomainNames(apiStack, httpAPIGatewayDomain, gattr.DomainConfig.Name, gatewayConfig)
+	httpAPIGateway := createHTTPAPIGateway(apiStack, gatewayBaseID, httpAPIGatewayDomain, gatewaysAttr)
+	registerDomainNames(apiStack, httpAPIGatewayDomain, domainConfig.Name, gatewaysAttr)
 
-		listenerLookupOptions := awselasticloadbalancingv2.ApplicationListenerLookupOptions{ListenerArn: jsii.String(gattr.IntegrationConfig.AlbListenerArn)}
-		listener := awselasticloadbalancingv2.ApplicationListener_FromLookup(apiStack.name, jsii.String(gatewayBaseID+"-ListenerLookup"), &listenerLookupOptions)
+	listenerLookupOptions := awselasticloadbalancingv2.ApplicationListenerLookupOptions{ListenerArn: jsii.String(integrationConfig.AlbListenerArn)}
+	listener := awselasticloadbalancingv2.ApplicationListener_FromLookup(apiStack.name, jsii.String(gatewayBaseID+"-ListenerLookup"), &listenerLookupOptions)
 
-		for routeIndex, route := range gatewayConfig.Routes {
-			configureRouteWithIntegration(
-				apiStack,
-				listener,
-				httpAPIGateway,
-				route,
-				routeIndex,
-				gatewayBaseID,
-				vpcLink,
-			)
-		}
+	for routeIndex, route := range gatewaysAttr.Routes {
+		configureRouteWithIntegration(
+			apiStack,
+			listener,
+			httpAPIGateway,
+			route,
+			routeIndex,
+			gatewayBaseID,
+			vpcLink,
+		)
 	}
 
 	return apiStack.name

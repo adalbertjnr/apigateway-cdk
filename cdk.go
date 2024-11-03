@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -32,6 +33,8 @@ func main() {
 		log.Fatalf("failed to deserialize gateway attribuites: %v", err)
 	}
 
+	fmt.Println(gatewayAttrs.APIGatewayConfig.GatewaysConfig)
+
 	_, vpcLink := NewVPCLinkStack(app, VPCStack, &CdkStackProps{
 		awscdk.StackProps{
 			Env: env(),
@@ -39,15 +42,21 @@ func main() {
 		gatewayAttrs.APIGatewayConfig.VpcLinkConfig,
 	)
 
-	NewApigwStack(app, GatewayStack, &CdkStackProps{
-		awscdk.StackProps{
-			Env: env(),
-		}},
-		&gatewayAttrs.APIGatewayConfig,
-		vpcLink,
-	)
+	for gatewayIndex, gatewayConfig := range gatewayAttrs.APIGatewayConfig.GatewaysConfig {
+		NewApigwStack(app, GatewayStack,
+			&CdkStackProps{awscdk.StackProps{Env: env()}},
+			gatewayAttrs.APIGatewayConfig.Environment,
+			gatewayAttrs.APIGatewayConfig.DomainConfig,
+			gatewayAttrs.APIGatewayConfig.VpcLinkConfig,
+			gatewayAttrs.APIGatewayConfig.IntegrationConfig,
+			gatewayIndex,
+			gatewayConfig,
+			vpcLink,
+		)
+	}
 
 	app.Synth(nil)
+
 }
 
 func env() *awscdk.Environment {

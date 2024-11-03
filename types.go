@@ -29,10 +29,10 @@ type ApiGatewayConfig struct {
 type ApiGatewayAttributes struct {
 	Environment string `yaml:"environment"`
 
-	DomainConfig      DomainConfig      `yaml:"domainConfig"`
-	VpcLinkConfig     VpcLinkConfig     `yaml:"vpcLinkConfig"`
-	IntegrationConfig IntegrationConfig `yaml:"integrationConfig"`
-	GatewaysConfig    []GatewayConfig   `yaml:"gatewaysConfig"`
+	DomainConfig      DomainConfig             `yaml:"domainConfig"`
+	VpcLinkConfig     VpcLinkConfig            `yaml:"vpcLinkConfig"`
+	IntegrationConfig IntegrationConfig        `yaml:"integrationConfig"`
+	GatewaysConfig    map[string]GatewayConfig `yaml:"gatewaysConfig"`
 }
 
 type DomainConfig struct {

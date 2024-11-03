@@ -35,8 +35,9 @@ apiGatewayConfig:
     #   key: "truststore.pem"
     #   version: "J39XO11I2_zc1qVSfjm1XV0LxKtAS1pd"
 
-    # if set this loggerArn, it will enable apiGateways logs for this app_2 and send to it
-    # loggerArn: "arn:aws:logs:us-east-1:550242925144:log-group:/aws/someloggroup/name"
+    # if set this logging, it will enable apiGateways logs for this app_2 and send to the loggerArn
+    # logging:
+    #  loggerArn: "arn:aws:logs:us-east-1:550242925144:log-group:/aws/someloggroup/name"
     routes:
       - path: "/api/v2/health"
         methods: ["GET", "POST"]

@@ -9,6 +9,7 @@ apiGatewayConfig:
   vpcLinkConfig:
     name: "vpcLink-cdk"
     vpcId: "vpc-0c33701aad1aab0f1"
+    # vpcLinkId: "r3abf7"
     subnets: ["subnet-0f1111cfcaar5eb22", "subnet-1ac3118fc8aac4c10"]
     securityGroups: ["sg-01ae307de22c35411"]
 
@@ -47,4 +48,4 @@ apiGatewayConfig:
         integration: "/cpf"
       - path: "/api/v1/health"
         methods: ["GET", "POST"]
-        #integration - if not set it will use path as integration which means will not create requestMapping
+        #integration - if not set it will use path as integration which means will not create parameterMapping

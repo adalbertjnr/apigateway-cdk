@@ -32,7 +32,7 @@ func NewVPCLinkStack(scope constructs.Construct, id string, props *CdkStackProps
 			jsii.String(id+"ImportVpcLink"),
 			&awsapigatewayv2.VpcLinkAttributes{
 				Vpc:       vpcId,
-				VpcLinkId: &vpcLinkConfig.VpcId,
+				VpcLinkId: vpcLinkConfig.VpcLinkId,
 			},
 		)
 	}

@@ -77,10 +77,12 @@ func createHTTPAPIGateway(stack *stackManager, baseID string, domain awsapigatew
 		Description:               jsii.String("Created by aws cdk for " + gatewayConfig.AppName),
 	})
 
-	var loggerConfigSettings awsapigatewayv2.CfnStage_AccessLogSettingsProperty
-	if gatewayConfig.Logging != nil {
-		loggerConfigSettings.DestinationArn = &gatewayConfig.Logging.LoggerArn
-		loggerConfigSettings.Format = jsii.String(`{"requestId": "$context.requestId", "ip": "$context.identity.sourceIp", "caller": "$context.identity.caller", "user": "$context.identity.user", "requestTime": "$context.requestTime", "httpMethod": "$context.httpMethod", "resourcePath": "$context.resourcePath", "status": "$context.status", "protocol": "$context.protocol", "responseLength": "$context.responseLength"}`)
+	var loggerConfigSettings *awsapigatewayv2.CfnStage_AccessLogSettingsProperty
+	if gatewayConfig.Logging != nil && gatewayConfig.Logging.LoggerArn != "" {
+		loggerConfigSettings = &awsapigatewayv2.CfnStage_AccessLogSettingsProperty{
+			DestinationArn: &gatewayConfig.Logging.LoggerArn,
+			Format:         jsii.String(`{"requestId": "$context.requestId", "ip": "$context.identity.sourceIp", "caller": "$context.identity.caller", "user": "$context.identity.user", "requestTime": "$context.requestTime", "httpMethod": "$context.httpMethod", "resourcePath": "$context.resourcePath", "status": "$context.status", "protocol": "$context.protocol", "responseLength": "$context.responseLength"}`),
+		}
 	}
 
 	stageCfn := awsapigatewayv2.NewCfnStage(stack.name, jsii.String(baseID+"-Stage"), &awsapigatewayv2.CfnStageProps{
